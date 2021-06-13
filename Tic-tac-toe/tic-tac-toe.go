@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -47,7 +48,7 @@ func expretionGame() {
 
 func printGameBoard(gameBoard [][]string) {
 	fmt.Printf("-----------\n")
-	fmt.Printf("%sNow gameboard is this!!\n", master)
+	fmt.Printf("%sCurrent gameboard is this!!\n", master)
 	for i := range gameBoard {
 		fmt.Printf("%s\n", strings.Join(gameBoard[i], " "))
 	}
@@ -56,9 +57,7 @@ func printGameBoard(gameBoard [][]string) {
 }
 
 func gameManager(gameBoard [][]string) {
-
 	userManager(gameBoard)
-
 	cpuManager(gameBoard)
 }
 
@@ -84,7 +83,6 @@ func userManager(gameBoard [][]string) {
 func cpuManager(gameBoard [][]string) {
 	cpuDeterminer(gameBoard)
 	judgment(gameBoard)
-
 	gameManager(gameBoard)
 }
 
@@ -98,7 +96,7 @@ func getInput() string {
 	fmt.Println(master + "you choose " + user_input)
 
 	if user_input == "exit" {
-		endGame()
+		endGame("draw")
 	}
 
 	return user_input
@@ -192,24 +190,92 @@ func cpuDeterminer(gameBoard [][]string) [][]string {
 }
 
 func judgment(gameBoard [][]string) {
-	result := make([]string, len(gameBoard))
+	horizontalBoard := make([][]string, len(gameBoard))
+	verticalBoard := make([][]string, len(gameBoard))
+	diagonalBoard := make([][]string, len(gameBoard))
+	reverseDiagonalBoard := make([][]string, len(gameBoard))
+
+	winner := ""
 	count := 0
+
+	userWinningPattern := []string{"0", "0", "0", "0", "0"}
+	cpuWinningPattern := []string{"x", "x", "x", "x", "x"}
+
 	for i := range gameBoard {
+
 		for v := range gameBoard {
-			result = append(result, gameBoard[i][v])
-			count = count + strings.Count(gameBoard[i][v], "-")
+
+			if i > 0 && v > 0 {
+				horizontalBoard[i] = append(horizontalBoard[i], gameBoard[i][v])
+				verticalBoard[i] = append(verticalBoard[i], gameBoard[v][i])
+
+				if i == v {
+					diagonalBoard[0] = append(diagonalBoard[0], gameBoard[i][v])
+				}
+
+				if i+v == 6 {
+					reverseDiagonalBoard[0] = append(reverseDiagonalBoard[0], gameBoard[i][v])
+				}
+
+				count = count + strings.Count(gameBoard[i][v], "-")
+			}
+		}
+
+		if reflect.DeepEqual(horizontalBoard[i], userWinningPattern) {
+			winner = "user"
+			endGame(winner)
+		}
+
+		if reflect.DeepEqual(verticalBoard[i], userWinningPattern) {
+			winner = "user"
+			endGame(winner)
+		}
+
+		if reflect.DeepEqual(diagonalBoard[0], userWinningPattern) {
+			winner = "user"
+			endGame(winner)
+		}
+
+		if reflect.DeepEqual(reverseDiagonalBoard[0], userWinningPattern) {
+			winner = "user"
+			endGame(winner)
+		}
+
+		if reflect.DeepEqual(horizontalBoard[i], cpuWinningPattern) {
+			winner = "cpu"
+			endGame(winner)
+		}
+
+		if reflect.DeepEqual(verticalBoard[i], cpuWinningPattern) {
+			winner = "cpu"
+			endGame(winner)
+		}
+
+		if reflect.DeepEqual(diagonalBoard[0], cpuWinningPattern) {
+			winner = "cpu"
+			endGame(winner)
+		}
+
+		if reflect.DeepEqual(reverseDiagonalBoard[0], cpuWinningPattern) {
+			winner = "cpu"
+			endGame(winner)
 		}
 	}
 
 	if count == 0 {
-		endGame()
+		endGame("draw")
 	}
-	// if user win
-	// if cpu win
-
 }
 
-func endGame() {
+func endGame(winner string) {
+
+	if winner == "user" {
+		fmt.Println(master + winner + " WIN !!")
+	} else if winner == "cpu" {
+		fmt.Println(master + winner + " WIN !!")
+	} else {
+		fmt.Println(master + "DRAW !!")
+	}
 	fmt.Println(master + "game end !!")
 	os.Exit(0)
 }
