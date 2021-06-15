@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-// /Users/tsuchiyadaichi/Documents/Golang/git/golang.study/golang.study/Tic-tac-toe
-
 const master = "[GameMaster]"
 
 func main() {
